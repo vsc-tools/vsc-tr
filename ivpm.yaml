@@ -1,0 +1,27 @@
+
+package:
+  name: vsc-tr
+  version: 0.0.1
+
+  dep-sets:
+    - name: default-dev
+      deps: 
+        - name: cython
+          src: pypi
+        - name: ninja
+          src: pypi
+        - name: vsc-dm
+          url: https://github.com/vsc-tools/vsc-dm.git
+
+    - name: default
+      deps: 
+        - name: cython
+          src: pypi
+        - name: ninja
+          src: pypi
+        - name: vsc-dm
+          url: https://github.com/vsc-tools/vsc-dm.git
+
+
+
+
