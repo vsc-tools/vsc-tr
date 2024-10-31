@@ -57,7 +57,7 @@ cdef class Factory(object):
                 raise Exception("Extension library core \"%s\" doesn't exist" % core_lib)
             
             so = ctypes.cdll.LoadLibrary(core_lib)
-            func = so.vsc_dm_getFactory
+            func = so.vsc_tr_getFactory
             func.restype = ctypes.c_void_p
 
             hndl = <decl.IFactoryP>(<intptr_t>(func()))
@@ -78,6 +78,20 @@ cdef class Factory(object):
 cdef class Stream(object):
     pass
 
+cdef class StreamReader(Stream):
+
+    cdef decl.IStreamReader *asReader(self):
+        return dynamic_cast[decl.IStreamReaderP](self._hndl)
+
+    @staticmethod
+    cdef StreamReader mk(decl.IStreamReader *hndl, bool owned=True):
+        ret = StreamReader()
+        ret._hndl = hndl
+        ret._owned = owned
+        return ret
+
+    pass
+
 cdef class StreamWriter(Stream):
 
     cdef decl.IStreamWriter *asWriter(self):
@@ -93,10 +107,73 @@ cdef class StreamWriter(Stream):
             tend,
             val.val)
 
+    @staticmethod
+    cdef StreamWriter mk(decl.IStreamWriter *hndl, bool owned=True):
+        ret = StreamWriter()
+        ret._hndl = hndl
+        ret._owned = owned
+        return ret
+
+cdef class Trace(object):
+    pass
+
+cdef class TraceReader(Trace):
+
+    cdef decl.ITraceReader *asReader(self):
+        return dynamic_cast[decl.ITraceReaderP](self._hndl)
+
+    cpdef List[StreamReader] getStreams(self):
+        cdef const cpp_vector[decl.IStreamReaderUP] *stream_l
+        ret = []
+        stream_l = &self.asReader().getStreams()
+
+        for i in range(stream_l.size()):
+            ret.append(StreamReader.mk(stream_l.at(i).get(), False))
+
+        return ret
+
+    @staticmethod
+    cdef TraceReader mk(decl.ITraceReader *hndl, bool owned=True):
+        ret = TraceReader()
+        ret._hndl = hndl
+        ret._owned = owned
+        return ret
+
+cdef class TraceWriter(Trace):
+
+    cdef decl.ITraceWriter *asWriter(self):
+        return dynamic_cast[decl.ITraceWriterP](self._hndl)
+
+    cpdef StreamWriter addStream(self, str name):
+        cdef decl.IStreamWriter *stream = self.asWriter().addStream(name.encode())
+        return StreamWriter.mk(stream, False)
+
+    @staticmethod
+    cdef TraceWriter mk(decl.ITraceWriter *hndl, bool owned=True):
+        ret = TraceWriter()
+        ret._hndl = hndl
+        ret._owned = owned
+        return ret
+
 cdef class TraceRW(object):
+
+    cpdef StreamWriter addStream(self, str name):
+        cdef decl.IStreamWriter *stream = self._hndl.addStream(name.encode())
+        return StreamWriter.mk(stream, False)
+
+    cpdef List[StreamReader] getStreams(self):
+        cdef const cpp_vector[decl.IStreamReaderUP] *stream_l
+        ret = []
+        stream_l = &self._hndl.getStreams()
+
+        for i in range(stream_l.size()):
+            ret.append(StreamReader.mk(stream_l.at(i).get(), False))
+
+        return ret
 
     @staticmethod
     cdef TraceRW mk(decl.ITraceRW *hndl, bool owned=True):
         ret = TraceRW()
         ret._hndl = hndl
         ret._owned = owned
+        return ret

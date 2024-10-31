@@ -11,6 +11,7 @@ from libc.stdint cimport int64_t
 from libcpp cimport bool
 from libcpp.vector cimport vector as cpp_vector
 from enum import IntFlag, IntEnum
+from typing import List
 cimport cpython.ref as cpy_ref
 
 cdef class Factory(object):
@@ -22,18 +23,18 @@ cdef class Factory(object):
 
     cpdef TraceRW mkTraceMem(self)
 
-cdef class TraceRW(object):
-    cdef decl.ITraceRW          *_hndl
-    cdef bool                   _owned
 
-    @staticmethod
-    cdef TraceRW mk(decl.ITraceRW *hndl, bool owned=*)
-
-cdef class Trace(object):
-    cdef decl.ITrace            *_hndl
 
 cdef class Stream(object):
     cdef decl.IStream           *_hndl
+    cdef bool                   _owned
+
+cdef class StreamReader(Stream):
+
+    cdef decl.IStreamReader *asReader(self)
+
+    @staticmethod
+    cdef StreamReader mk(decl.IStreamReader *hndl, bool owned=*)
 
 cdef class StreamWriter(Stream):
 
@@ -44,3 +45,40 @@ cdef class StreamWriter(Stream):
         uint64_t                tstart,
         uint64_t                tend,
         dm_core.ValRef          val)
+
+    @staticmethod
+    cdef StreamWriter mk(decl.IStreamWriter *hndl, bool owned=*)
+
+cdef class Trace(object):
+    cdef decl.ITrace            *_hndl
+    cdef bool                   _owned
+
+cdef class TraceReader(Trace):
+
+    cdef decl.ITraceReader *asReader(self)
+
+    cpdef List[StreamReader] getStreams(self)
+
+    @staticmethod
+    cdef TraceReader mk(decl.ITraceReader *hndl, bool owned=*)
+
+cdef class TraceWriter(Trace):
+
+    cdef decl.ITraceWriter *asWriter(self)
+
+    cpdef StreamWriter addStream(self, str name)
+
+    @staticmethod
+    cdef TraceWriter mk(decl.ITraceWriter *hndl, bool owned=*)
+
+cdef class TraceRW(object):
+    cdef decl.ITraceRW          *_hndl
+    cdef bool                   _owned
+
+    cpdef StreamWriter addStream(self, str name)
+
+    cpdef List[StreamReader] getStreams(self)
+
+    @staticmethod
+    cdef TraceRW mk(decl.ITraceRW *hndl, bool owned=*)
+

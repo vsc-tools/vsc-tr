@@ -38,6 +38,15 @@ public:
 
     virtual ~TraceMemRWStream();
 
+    virtual const std::string &name() const override {
+        return m_name;
+    }
+
+    virtual ITraceIterator *iterator(
+        ItKind          kind,
+        int64_t         start=0,
+        int64_t         end=-1) override;
+
     virtual intptr_t addTransaction(
         uint64_t            tstart,
         uint64_t            tend,
@@ -45,7 +54,7 @@ public:
 
 private:
     std::string                         m_name;
-    std::vector<TraceMemTransaction>    m_transactions;
+    std::vector<TraceMemTransactionUP>  m_transactions;
 
 };
 

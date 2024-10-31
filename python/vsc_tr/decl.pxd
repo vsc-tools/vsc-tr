@@ -18,6 +18,11 @@ cimport cpython.ref as cpy_ref
 ctypedef IFactory *IFactoryP
 ctypedef IStreamWriter *IStreamWriterP
 ctypedef IStreamReader *IStreamReaderP
+ctypedef ITrace *ITraceP
+ctypedef ITraceReader *ITraceReaderP
+ctypedef ITraceWriter *ITraceWriterP
+ctypedef ITraceRW *ITraceRWP
+ctypedef unique_ptr[IStreamReader] IStreamReaderUP
 
 #********************************************************************
 #* IFactory
@@ -50,6 +55,7 @@ cdef extern from "vsc/tr/ITrace.h" namespace "vsc::tr":
 
 cdef extern from "vsc/tr/ITraceReader.h" namespace "vsc::tr":
     cdef cppclass ITraceReader(ITrace):
+        const cpp_vector[IStreamReaderUP] &getStreams() const
         pass
 
 cdef extern from "vsc/tr/ITraceWriter.h" namespace "vsc::tr":
@@ -59,4 +65,5 @@ cdef extern from "vsc/tr/ITraceWriter.h" namespace "vsc::tr":
 cdef extern from "vsc/tr/ITraceRW.h" namespace "vsc::tr":
     cdef cppclass ITraceRW(ITrace):
         IStreamWriter *addStream(const cpp_string &name)
+        const cpp_vector[IStreamReaderUP] &getStreams() const
 

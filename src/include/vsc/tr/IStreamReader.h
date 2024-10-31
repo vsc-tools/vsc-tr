@@ -20,6 +20,7 @@
  */
 #pragma once
 #include <stdint.h>
+#include "vsc/tr/IStream.h"
 #include "vsc/tr/ITraceIterator.h"
 
 namespace vsc {
@@ -27,7 +28,8 @@ namespace tr {
 
 class IStreamReader;
 using IStreamReaderUP=std::unique_ptr<IStreamReader>;
-class IStreamReader {
+class IStreamReader :
+    public virtual IStream {
 public:
 
     virtual ~IStreamReader() { }

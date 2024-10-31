@@ -34,11 +34,20 @@ TraceMemRWStream::~TraceMemRWStream() {
 
 }
 
+ITraceIterator *TraceMemRWStream::iterator(
+        ItKind          kind,
+        int64_t         start,
+        int64_t         end) {
+
+}
+
 intptr_t TraceMemRWStream::addTransaction(
         uint64_t            tstart,
         uint64_t            tend,
         const dm::ValRef    &data) {
-
+    TraceMemTransaction *t = new TraceMemTransaction(tstart, tend, data);
+    m_transactions.push_back(TraceMemTransactionUP(t));
+    return (intptr_t)t;
 }
 
 }

@@ -20,6 +20,7 @@
  */
 #include "dmgr/impl/DebugMacros.h"
 #include "TraceMemRW.h"
+#include "TraceMemRWStream.h"
 
 
 namespace vsc {
@@ -36,8 +37,10 @@ TraceMemRW::~TraceMemRW() {
 
 IStreamWriter *TraceMemRW::addStream(const std::string &name) {
     DEBUG_ENTER("addStream");
-
+    TraceMemRWStream *stream = new TraceMemRWStream(name);
+    m_streams.push_back(IStreamReaderUP(stream));
     DEBUG_LEAVE("addStream");
+    return stream;
 }
 
 ITraceIterator *TraceMemRW::iterate(
