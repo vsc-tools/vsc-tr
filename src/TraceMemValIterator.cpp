@@ -25,7 +25,9 @@ namespace vsc {
 namespace tr {
 
 
-TraceMemValIterator::TraceMemValIterator(const vsc::dm::ValRef &val) {
+TraceMemValIterator::TraceMemValIterator(const vsc::dm::ValRef &val) :
+    m_val(val), m_it(m_val.type()->mkValIterator(m_val)) {
+    
 
 }
 
@@ -35,32 +37,44 @@ TraceMemValIterator::~TraceMemValIterator() {
 
 // Resets the iterator to its initial point
 void TraceMemValIterator::reset() {
-
+    m_it->reset();
 }
 
     // Gets the data type of the current value
 dm::IDataType *TraceMemValIterator::getDataType() {
-
+    return m_it->getDataType();
 }
 
     // Returns the number of fields in the current scope
 int32_t TraceMemValIterator::numFields() {
+    return m_it->numFields();
+}
 
+dm::IDataType *TraceMemValIterator::getFieldType(int32_t idx) {
+    return m_it->getFieldType(idx);
+}
+
+std::string TraceMemValIterator::getFieldName(int32_t idx) {
+    return m_it->getFieldName(idx);
+}
+
+dm::ValRef TraceMemValIterator::getFieldVal(int32_t idx) {
+    return m_it->getFieldVal(idx);
 }
 
     // Pushes into a specific field scope
 bool TraceMemValIterator::push(int32_t idx) {
-
+    return m_it->push(idx);
 }
 
     // Pops out of the current scope
 bool TraceMemValIterator::pop() {
-
+    return m_it->pop();
 }
 
     // Gets the value of the current field
 dm::ValRef TraceMemValIterator::getVal() {
-
+    return m_it->getVal();
 }
 
 }

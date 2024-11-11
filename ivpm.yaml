@@ -12,6 +12,8 @@ package:
           src: pypi
         - name: vsc-dm
           url: https://github.com/vsc-tools/vsc-dm.git
+        - name: pyvsc-dataclasses
+          url: https://github.com/vsc-tools/pyvsc-dataclasses.git
 
     - name: default
       deps: 

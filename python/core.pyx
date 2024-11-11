@@ -6,6 +6,7 @@ from enum import IntFlag, IntEnum
 from ctypes import CDLL
 cimport vsc_tr.decl as decl
 cimport vsc_dm.core as dm_core
+cimport vsc_dm.decl as dm_decl
 cimport cpython.ref as cpy_ref
 cimport debug_mgr.core as dmgr_core
 from libc.stdint cimport intptr_t
@@ -83,6 +84,13 @@ cdef class StreamReader(Stream):
     cdef decl.IStreamReader *asReader(self):
         return dynamic_cast[decl.IStreamReaderP](self._hndl)
 
+    cpdef TraceIterator iterator(self, uint64_t start):
+        cdef decl.ITraceIterator *it = self.asReader().iterator(start)
+        if it == NULL:
+            return None
+        else:
+            return TraceIterator.mk(it, True)
+
     @staticmethod
     cdef StreamReader mk(decl.IStreamReader *hndl, bool owned=True):
         ret = StreamReader()
@@ -116,6 +124,30 @@ cdef class StreamWriter(Stream):
 
 cdef class Trace(object):
     pass
+
+cdef class TraceIterator(object):
+
+    def __dealloc__(self):
+        if self._owned and self._hndl != NULL:
+            del self._hndl
+            self._hndl = NULL
+
+    cpdef bool valid(self):
+        return self._hndl.valid()
+
+    cpdef Transaction next(self):
+        cdef decl.ITransaction *t = self._hndl.next()
+        if t == NULL:
+            return None
+        else:
+            return Transaction.mk(t, False)
+
+    @staticmethod
+    cdef TraceIterator mk(decl.ITraceIterator *hndl, bool owned=True):
+        ret = TraceIterator()
+        ret._hndl = hndl
+        ret._owned = owned
+        return ret
 
 cdef class TraceReader(Trace):
 
@@ -171,9 +203,57 @@ cdef class TraceRW(object):
 
         return ret
 
+    cpdef int numStreams(self):
+        return self._hndl.getStreams().size()
+
+    cpdef StreamReader getStream(self, int idx):
+        cdef decl.IStreamReader *stream = self._hndl.getStreams().at(idx).get()
+        return StreamReader.mk(stream, False)
+
+    cpdef TraceIterator iterate(self, uint64_t start, streams):
+        cdef cpp_vector[decl.IStreamReaderP] streams_v
+        cdef StreamReader stream_r
+        cdef decl.ITraceIterator *it
+
+        for stream in streams:
+            stream_r = <StreamReader>stream
+            streams_v.push_back(stream_r.asReader())
+
+        it = self._hndl.iterate(start, streams_v)
+
+        if it == NULL:
+            return None
+        else: 
+            return TraceIterator.mk(it, True)
+
     @staticmethod
     cdef TraceRW mk(decl.ITraceRW *hndl, bool owned=True):
         ret = TraceRW()
+        ret._hndl = hndl
+        ret._owned = owned
+        return ret
+
+cdef class Transaction(object):
+
+    cpdef intptr_t getId(self):
+        return self._hndl.getId()
+
+    cpdef uint64_t getTimeStart(self):
+        return self._hndl.getTimeStart()
+
+    cpdef uint64_t getTimeEnd(self):
+        return self._hndl.getTimeEnd()
+
+    cpdef dm_core.ValIterator mkValIterator(self):
+        cdef dm_decl.IValIterator *it = self._hndl.mkValIterator()
+        if it == NULL:
+            return None
+        else:
+            return dm_core.ValIterator.mk(it, True)
+
+    @staticmethod
+    cdef Transaction mk(decl.ITransaction *hndl, bool owned=True):
+        ret = Transaction()
         ret._hndl = hndl
         ret._owned = owned
         return ret

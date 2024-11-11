@@ -20,6 +20,7 @@
  */
 #include "dmgr/impl/DebugMacros.h"
 #include "TraceMemRW.h"
+#include "TraceMemRWIterator.h"
 #include "TraceMemRWStream.h"
 
 
@@ -47,7 +48,7 @@ ITraceIterator *TraceMemRW::iterate(
         uint64_t                            start,
         const std::vector<IStreamReader *>  &streams) {
     DEBUG_ENTER("iterate");
-
+    return new TraceMemRWIterator(start, streams);
     DEBUG_LEAVE("iterate");
 }
 

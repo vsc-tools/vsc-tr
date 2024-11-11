@@ -20,6 +20,7 @@
  */
 #pragma once
 #include "vsc/dm/IValIterator.h"
+#include "vsc/dm/impl/ValRef.h"
 
 namespace vsc {
 namespace tr {
@@ -42,6 +43,12 @@ public:
     // Returns the number of fields in the current scope
     virtual int32_t numFields() override;
 
+    virtual dm::IDataType *getFieldType(int32_t idx) override;
+
+    virtual std::string getFieldName(int32_t idx) override;
+
+    virtual dm::ValRef getFieldVal(int32_t idx) override;
+
     // Pushes into a specific field scope
     virtual bool push(int32_t idx) override;
 
@@ -52,7 +59,8 @@ public:
     virtual dm::ValRef getVal() override;
 
 private:
-    vsc::dm::ValRef             m_val;
+    dm::ValRef                  m_val;
+    dm::IValIteratorUP          m_it;
 
 };
 

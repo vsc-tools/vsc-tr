@@ -42,15 +42,20 @@ public:
         return m_name;
     }
 
-    virtual ITraceIterator *iterator(
-        ItKind          kind,
-        int64_t         start=0,
-        int64_t         end=-1) override;
+    virtual ITraceIterator *iterator(uint64_t start) override;
 
     virtual intptr_t addTransaction(
         uint64_t            tstart,
         uint64_t            tend,
         const dm::ValRef    &data) override;
+
+    int32_t numTransactions() const {
+        return m_transactions.size();
+    }
+
+    TraceMemTransaction *getTransaction(int32_t idx) {
+        return m_transactions.at(idx).get();
+    }
 
 private:
     std::string                         m_name;

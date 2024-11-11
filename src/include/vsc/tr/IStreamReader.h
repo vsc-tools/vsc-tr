@@ -53,10 +53,7 @@ public:
         Inside
     };
 
-    virtual ITraceIterator *iterator(
-        ItKind          kind,
-        int64_t         start=0,
-        int64_t         end=-1) = 0;
+    virtual ITraceIterator *iterator(uint64_t start) = 0;
 
 };
 

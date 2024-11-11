@@ -40,6 +40,7 @@ cdef extern from "vsc/tr/IStream.h" namespace "vsc::tr":
 
 cdef extern from "vsc/tr/IStreamReader.h" namespace "vsc::tr":
     cdef cppclass IStreamReader(IStream):
+        ITraceIterator *iterator(uint64_t start)
         pass
 
 cdef extern from "vsc/tr/IStreamWriter.h" namespace "vsc::tr":
@@ -56,7 +57,7 @@ cdef extern from "vsc/tr/ITrace.h" namespace "vsc::tr":
 cdef extern from "vsc/tr/ITraceReader.h" namespace "vsc::tr":
     cdef cppclass ITraceReader(ITrace):
         const cpp_vector[IStreamReaderUP] &getStreams() const
-        pass
+        ITraceIterator *iterator(uint64_t start, const cpp_vector[IStreamReaderP] &)
 
 cdef extern from "vsc/tr/ITraceWriter.h" namespace "vsc::tr":
     cdef cppclass ITraceWriter(ITrace):
@@ -66,4 +67,18 @@ cdef extern from "vsc/tr/ITraceRW.h" namespace "vsc::tr":
     cdef cppclass ITraceRW(ITrace):
         IStreamWriter *addStream(const cpp_string &name)
         const cpp_vector[IStreamReaderUP] &getStreams() const
+        ITraceIterator *iterate(uint64_t start, const cpp_vector[IStreamReaderP] &)
+
+cdef extern from "vsc/tr/ITransaction.h" namespace "vsc::tr":
+    cdef cppclass ITransaction:
+        intptr_t getId()
+        uint64_t getTimeStart()
+        uint64_t getTimeEnd()
+        dm_decl.IValIterator *mkValIterator()
+
+cdef extern from "vsc/tr/ITraceIterator.h" namespace "vsc::tr":
+    cdef cppclass ITraceIterator:
+        bool valid()
+        ITransaction *next()
+
 

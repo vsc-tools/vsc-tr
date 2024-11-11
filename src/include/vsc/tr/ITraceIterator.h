@@ -36,13 +36,9 @@ public:
 
     virtual ~ITraceIterator() { }
 
-    virtual bool valid() const = 0;
+    virtual bool valid() = 0;
 
-    virtual IterEv kind() const = 0;
-
-    virtual ITransaction *transaction() const = 0;
-
-    virtual bool next() = 0;
+    virtual ITransaction *next() = 0;
 
 };
 

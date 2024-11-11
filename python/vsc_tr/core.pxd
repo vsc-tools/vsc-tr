@@ -33,6 +33,8 @@ cdef class StreamReader(Stream):
 
     cdef decl.IStreamReader *asReader(self)
 
+    cpdef TraceIterator iterator(self, uint64_t start)
+
     @staticmethod
     cdef StreamReader mk(decl.IStreamReader *hndl, bool owned=*)
 
@@ -52,6 +54,16 @@ cdef class StreamWriter(Stream):
 cdef class Trace(object):
     cdef decl.ITrace            *_hndl
     cdef bool                   _owned
+
+cdef class TraceIterator(object):
+    cdef decl.ITraceIterator    *_hndl
+    cdef bool                   _owned
+
+    cpdef bool valid(self)
+    cpdef Transaction next(self)
+
+    @staticmethod
+    cdef TraceIterator mk(decl.ITraceIterator *hndl, bool owned=*)
 
 cdef class TraceReader(Trace):
 
@@ -79,6 +91,23 @@ cdef class TraceRW(object):
 
     cpdef List[StreamReader] getStreams(self)
 
+    cpdef int numStreams(self)
+
+    cpdef StreamReader getStream(self, int idx)
+
+    cpdef TraceIterator iterate(self, uint64_t start, streams)
+
     @staticmethod
     cdef TraceRW mk(decl.ITraceRW *hndl, bool owned=*)
 
+cdef class Transaction(object):
+    cdef decl.ITransaction      *_hndl
+    cdef bool                   _owned
+
+    cpdef intptr_t getId(self)
+    cpdef uint64_t getTimeStart(self)
+    cpdef uint64_t getTimeEnd(self)
+    cpdef dm_core.ValIterator mkValIterator(self)
+
+    @staticmethod
+    cdef Transaction mk(decl.ITransaction *hndl, bool owned=*)

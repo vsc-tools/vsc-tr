@@ -1,5 +1,5 @@
-/*
- * TraceMemRWStream.cpp
+/**
+ * TraceMemRWStreamIterator.h
  *
  * Copyright 2023 Matthew Ballance and Contributors
  *
@@ -16,36 +16,38 @@
  * limitations under the License.
  *
  * Created on:
- *     Author:
+ *     Author: 
  */
-#include "TraceMemRWStream.h"
-#include "TraceMemRWStreamIterator.h"
+#pragma once
+#include "vsc/tr/ITraceIterator.h"
 
 namespace vsc {
 namespace tr {
 
+class TraceMemRWStream;
 
-TraceMemRWStream::TraceMemRWStream(const std::string &name) 
-    : m_name(name) {
+class TraceMemRWStreamIterator :
+    public virtual ITraceIterator {
+public:
+    TraceMemRWStreamIterator(
+        uint64_t            start,
+        TraceMemRWStream    *stream);
+
+    virtual ~TraceMemRWStreamIterator();
+
+    virtual bool valid() override;
+
+    virtual ITransaction *next() override;
+
+private:
+    uint64_t                m_start;
+    int32_t                 m_stream_idx;
+    TraceMemRWStream        *m_stream;
+    ITransaction            *m_transaction;
+
+};
 
 }
-
-TraceMemRWStream::~TraceMemRWStream() {
-
 }
 
-ITraceIterator *TraceMemRWStream::iterator(uint64_t start) {
-    return new TraceMemRWStreamIterator(start, this);
-}
 
-intptr_t TraceMemRWStream::addTransaction(
-        uint64_t            tstart,
-        uint64_t            tend,
-        const dm::ValRef    &data) {
-    TraceMemTransaction *t = new TraceMemTransaction(tstart, tend, data);
-    m_transactions.push_back(TraceMemTransactionUP(t));
-    return (intptr_t)t;
-}
-
-}
-}
