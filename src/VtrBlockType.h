@@ -1,5 +1,5 @@
 /**
- * ITrace.h
+ * VtrBlockType.h
  *
  * Copyright 2023 Matthew Ballance and Contributors
  *
@@ -19,21 +19,19 @@
  *     Author: 
  */
 #pragma once
-#include <string>
 
 namespace vsc {
 namespace tr {
 
-
-
-class ITrace {
-public:
-
-    virtual ~ITrace() { }
-
-    virtual void close() = 0;
-
+enum class VtrBlockType {
+    StreamDesc,
+    TypeDef,
+    StrTab,
+    StreamData,
+    StreamDataP,
+    Terminator
 };
+
 
 } /* namespace tr */
 } /* namespace vsc */

@@ -1,5 +1,5 @@
 /**
- * ITrace.h
+ * VtrBlockHeader.h
  *
  * Copyright 2023 Matthew Ballance and Contributors
  *
@@ -19,23 +19,39 @@
  *     Author: 
  */
 #pragma once
-#include <string>
+#include <ostream>
+#include <stdint.h>
+#include "VtrBlockType.h"
+#include "VtrMemBlockWriter.h"
 
 namespace vsc {
 namespace tr {
 
 
 
-class ITrace {
+class VtrBlockHeader {
 public:
+    VtrBlockHeader();
 
-    virtual ~ITrace() { }
+    virtual ~VtrBlockHeader();
 
-    virtual void close() = 0;
+    static void write(
+        std::ostream            *out,
+        VtrBlockType            type,
+        uint32_t                flags,
+        std::streampos          prev,
+        int32_t                 body_sz);
+
+    static void write(
+        std::ostream            *out,
+        VtrBlockType            type,
+        uint32_t                flags,
+        std::streampos          prev,
+        VtrMemBlockWriter       *writer);
 
 };
 
-} /* namespace tr */
-} /* namespace vsc */
+}
+}
 
 

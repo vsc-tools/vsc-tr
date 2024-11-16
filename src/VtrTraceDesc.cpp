@@ -1,5 +1,5 @@
-/**
- * ITrace.h
+/*
+ * VtrTraceDesc.cpp
  *
  * Copyright 2023 Matthew Ballance and Contributors
  *
@@ -16,26 +16,22 @@
  * limitations under the License.
  *
  * Created on:
- *     Author: 
+ *     Author:
  */
-#pragma once
-#include <string>
+#include "VtrTraceDesc.h"
+
 
 namespace vsc {
 namespace tr {
 
 
+VtrTraceDesc::VtrTraceDesc() {
 
-class ITrace {
-public:
+}
 
-    virtual ~ITrace() { }
+VtrTraceDesc::~VtrTraceDesc() {
 
-    virtual void close() = 0;
+}
 
-};
-
-} /* namespace tr */
-} /* namespace vsc */
-
-
+}
+}

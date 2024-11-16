@@ -34,6 +34,10 @@ public:
 
     virtual ~TraceMemRW();
 
+    virtual void close() override { }
+
+    virtual void flush() override { }
+
     virtual IStreamWriter *addStream(const std::string &name) override;
 
     virtual const std::vector<IStreamReaderUP> &getStreams() const override {

@@ -1,5 +1,5 @@
 /**
- * ITrace.h
+ * VtrMemBlockWriter.h
  *
  * Copyright 2023 Matthew Ballance and Contributors
  *
@@ -19,23 +19,46 @@
  *     Author: 
  */
 #pragma once
-#include <string>
+#include <stdint.h>
 
 namespace vsc {
 namespace tr {
 
 
 
-class ITrace {
+class VtrMemBlockWriter {
 public:
+    VtrMemBlockWriter();
 
-    virtual ~ITrace() { }
+    virtual ~VtrMemBlockWriter();
 
-    virtual void close() = 0;
+    void reset();
+
+    uint32_t size() { return m_idx; }
+
+    char *mem() { return (char *)m_mem; }
+
+    int32_t write_ui(uint64_t val);
+
+    int32_t write_si(int64_t val);
+
+    void write_bytes(const void *data, int32_t sz);
+
+    static int32_t pack_ui(uint64_t val, uint8_t *buf);
+
+    static int32_t pack_si(int64_t val, uint8_t *buf);
+
+private:
+    void ensure_space(uint32_t sz);
+
+private:
+    uint8_t             *m_mem;
+    uint32_t            m_mem_sz;
+    uint32_t            m_idx;
 
 };
 
-} /* namespace tr */
-} /* namespace vsc */
+}
+}
 
 

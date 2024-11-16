@@ -1,5 +1,5 @@
 /**
- * ITrace.h
+ * VtrMemBlockReader.h
  *
  * Copyright 2023 Matthew Ballance and Contributors
  *
@@ -19,23 +19,37 @@
  *     Author: 
  */
 #pragma once
-#include <string>
+#include <stdint.h>
 
 namespace vsc {
 namespace tr {
 
 
 
-class ITrace {
+class VtrMemBlockReader {
 public:
+    VtrMemBlockReader(uint8_t *mem, int32_t mem_sz, bool owned);
 
-    virtual ~ITrace() { }
+    virtual ~VtrMemBlockReader();
 
-    virtual void close() = 0;
+    uint64_t read_ui();
+
+    int64_t read_si();
+
+    void reset();
+
+    bool valid() const { return m_idx < m_mem_sz; }
+
+private:
+    uint8_t                 *m_mem;
+    int32_t                 m_mem_sz;
+    bool                    m_owned;
+    int32_t                 m_idx;
+
 
 };
 
-} /* namespace tr */
-} /* namespace vsc */
+}
+}
 
 

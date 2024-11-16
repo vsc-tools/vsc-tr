@@ -125,12 +125,25 @@ cdef class StreamWriter(Stream):
 cdef class Trace(object):
     pass
 
+class TraceIteratorProxy(object):
+    def __init__(self, it):
+        self._it = it
+        
+    def __next__(self):
+        if (self._it.valid()):
+            return self._it.next()
+        else:
+            raise StopIteration()
+
 cdef class TraceIterator(object):
 
     def __dealloc__(self):
         if self._owned and self._hndl != NULL:
             del self._hndl
             self._hndl = NULL
+
+    def __iter__(self):
+        return TraceIteratorProxy(self)
 
     cpdef bool valid(self):
         return self._hndl.valid()

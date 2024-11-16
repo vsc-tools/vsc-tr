@@ -1,5 +1,5 @@
 /**
- * ITrace.h
+ * VtrTraceTerminator.h
  *
  * Copyright 2023 Matthew Ballance and Contributors
  *
@@ -19,20 +19,24 @@
  *     Author: 
  */
 #pragma once
-#include <string>
+#include <stdint.h>
+#include <istream>
+#include <ostream>
 
 namespace vsc {
 namespace tr {
 
+struct VtrTraceTerminator {
+    uint8_t         sz; // sz and type ensure this is a valid block
+    uint8_t         type;
+    uint64_t        type_def_p;
+    uint64_t        stream_desc_p; // points to the tail of the stream-
+    uint64_t        stream_data_p; // points back to a variable-size block
+    uint64_t        strtab_p; // points to the tail of the strtab chain
 
+    std::streampos write(std::ostream *out);
 
-class ITrace {
-public:
-
-    virtual ~ITrace() { }
-
-    virtual void close() = 0;
-
+    static VtrTraceTerminator read(std::istream *in, bool seek=true);
 };
 
 } /* namespace tr */

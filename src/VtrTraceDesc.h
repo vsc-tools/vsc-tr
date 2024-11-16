@@ -1,5 +1,5 @@
 /**
- * ITrace.h
+ * VtrTraceDesc.h
  *
  * Copyright 2023 Matthew Ballance and Contributors
  *
@@ -19,23 +19,24 @@
  *     Author: 
  */
 #pragma once
+#include <stdio.h>
 #include <string>
+#include <ostream>
 
 namespace vsc {
 namespace tr {
 
 
 
-class ITrace {
+class VtrTraceDesc {
 public:
+    VtrTraceDesc();
 
-    virtual ~ITrace() { }
-
-    virtual void close() = 0;
+    virtual ~VtrTraceDesc();
 
 };
 
-} /* namespace tr */
-} /* namespace vsc */
+}
+}
 
 

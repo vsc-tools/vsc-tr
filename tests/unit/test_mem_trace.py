@@ -43,6 +43,9 @@ class TestMemTrace(TestBase):
         while t_it.valid():
             t = t_it.next()
             print("%d..%d" % (t.getTimeStart(), t.getTimeEnd()))
+        
+        for t in s1_r.iterator(4):
+            print("it")
 
         # filter expected to yield bool
         # map expected to yield a value or a transaction

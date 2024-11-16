@@ -1,5 +1,5 @@
 /**
- * ITrace.h
+ * VtrStreamDataP.h
  *
  * Copyright 2023 Matthew Ballance and Contributors
  *
@@ -19,23 +19,21 @@
  *     Author: 
  */
 #pragma once
-#include <string>
 
 namespace vsc {
 namespace tr {
 
 
 
-class ITrace {
+class VtrStreamDataP {
 public:
+    VtrStreamDataP();
 
-    virtual ~ITrace() { }
-
-    virtual void close() = 0;
+    virtual ~VtrStreamDataP();
 
 };
 
-} /* namespace tr */
-} /* namespace vsc */
+}
+}
 
 

@@ -35,6 +35,10 @@ public:
 
     virtual IStreamWriter *addStream(const std::string &name) = 0;
 
+    virtual void flush() = 0;
+
+    virtual void close() = 0;
+
 };
 
 } /* namespace tr */

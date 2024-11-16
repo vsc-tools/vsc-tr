@@ -1,5 +1,5 @@
 /**
- * ITrace.h
+ * VtrTraceHeader.h
  *
  * Copyright 2023 Matthew Ballance and Contributors
  *
@@ -19,20 +19,18 @@
  *     Author: 
  */
 #pragma once
-#include <string>
+#include <stdint.h>
 
 namespace vsc {
 namespace tr {
 
+static const uint32_t VTR_MAGIC = 0x00525456; // Assume little-endian
 
-
-class ITrace {
-public:
-
-    virtual ~ITrace() { }
-
-    virtual void close() = 0;
-
+struct VtrTraceHeader {
+    uint32_t            magic;
+    uint32_t            version;
+    int32_t             timecale;
+    int32_t             timeunit;
 };
 
 } /* namespace tr */
