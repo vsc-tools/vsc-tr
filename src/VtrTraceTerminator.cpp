@@ -20,7 +20,6 @@
  */
 #include <string.h>
 #include "VtrTraceTerminator.h"
-#include "VtrBlockType.h"
 
 namespace vsc {
 namespace tr {
@@ -56,7 +55,7 @@ VtrTraceTerminator VtrTraceTerminator::read(std::istream *in, bool seek) {
 
     if (sz == packed_sz) {
         ret.sz = sz;
-        ret.type = (in->get() & 0x7F);
+        ret.type = (VtrBlockType)(in->get() & 0x7F);
         in->read((char *)&ret.type_def_p, 8);
         in->read((char *)&ret.stream_desc_p, 8);
         in->read((char *)&ret.stream_data_p, 8);

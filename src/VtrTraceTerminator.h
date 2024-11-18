@@ -22,13 +22,14 @@
 #include <stdint.h>
 #include <istream>
 #include <ostream>
+#include "VtrBlockType.h"
 
 namespace vsc {
 namespace tr {
 
 struct VtrTraceTerminator {
     uint8_t         sz; // sz and type ensure this is a valid block
-    uint8_t         type;
+    VtrBlockType    type;
     uint64_t        type_def_p;
     uint64_t        stream_desc_p; // points to the tail of the stream-
     uint64_t        stream_data_p; // points back to a variable-size block

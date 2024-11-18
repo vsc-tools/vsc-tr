@@ -20,13 +20,15 @@
  */
 #pragma once
 #include <stdint.h>
+#include "IVtrWriter.h"
 
 namespace vsc {
 namespace tr {
 
 
 
-class VtrMemBlockWriter {
+class VtrMemBlockWriter :
+    public virtual IVtrWriter {
 public:
     VtrMemBlockWriter();
 
@@ -38,11 +40,11 @@ public:
 
     char *mem() { return (char *)m_mem; }
 
-    int32_t write_ui(uint64_t val);
+    virtual int32_t write_ui(uint64_t val) override;
 
-    int32_t write_si(int64_t val);
+    virtual int32_t write_si(int64_t val) override;
 
-    void write_bytes(const void *data, int32_t sz);
+    virtual void write_bytes(const void *data, int32_t sz) override;
 
     static int32_t pack_ui(uint64_t val, uint8_t *buf);
 

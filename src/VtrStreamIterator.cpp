@@ -1,5 +1,5 @@
-/**
- * VtrTraceDesc.h
+/*
+ * VtrStreamIterator.cpp
  *
  * Copyright 2023 Matthew Ballance and Contributors
  *
@@ -16,27 +16,22 @@
  * limitations under the License.
  *
  * Created on:
- *     Author: 
+ *     Author:
  */
-#pragma once
-#include <stdio.h>
-#include <string>
-#include <ostream>
+#include "VtrStreamIterator.h"
+
 
 namespace vsc {
 namespace tr {
 
 
+VtrStreamIterator::VtrStreamIterator() {
 
-class VtrTraceDesc {
-public:
-    VtrTraceDesc();
+}
 
-    virtual ~VtrTraceDesc();
+VtrStreamIterator::~VtrStreamIterator() {
 
-};
+}
 
 }
 }
-
-

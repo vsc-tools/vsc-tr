@@ -33,6 +33,7 @@ message("IVPM_CMAKE_PATH: ${IVPM_CMAKE_PATH} ${CMAKE_MODULE_PATH}")
 include(ivpm)
 
 Ivpm_AddPythonExtProject(debug-mgr debug_mgr)
+Ivpm_AddPythonExtProject(ciostreamm ciostream)
 Ivpm_AddPythonExtProject(vsc-dm vsc_dm)
 
 if(NOT WIN32)

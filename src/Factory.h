@@ -43,6 +43,14 @@ public:
 
     virtual ITraceRW *mkTraceMem() override;
 
+    virtual ITraceWriter *mkTraceVtrWriter(
+        std::ostream    *out,
+        int32_t         timescale,
+        int32_t         timeunit) override;
+
+    virtual ITraceReader *mkTraceVtrReader(std::istream *in) override;
+;
+
     static IFactory *inst();
 
 private:

@@ -76,6 +76,18 @@ cdef class Factory(object):
         cdef decl.ITraceRW *trace = self._hndl.mkTraceMem()
         return TraceRW.mk(trace, False)
 
+    cpdef TraceWriter mkTraceVtrWriter(self,
+        costream        out,
+        int32_t         timescale,
+        int32_t         timeunit):
+        cdef decl.ITraceWriter *writer = self._hndl.mkTraceVtrWriter(
+            out._hndl,
+            timescale,
+            timeunit)
+
+        return TraceWriter.mk(writer, True)
+
+
 cdef class Stream(object):
     pass
 

@@ -73,6 +73,7 @@ setup_args = dict(
     ]
   },
   install_requires=[
+      'ciostream',
       'vsc-dm',
   ],
   setup_requires=[
@@ -83,7 +84,7 @@ setup_args = dict(
 )
 
 if isSrcBuild:
-    setup_args["ivpm_extdep_pkgs"] = ["vsc-dm", "debug-mgr"]
+    setup_args["ivpm_extdep_pkgs"] = ['ciostream', "vsc-dm", "debug-mgr"]
     setup_args["ivpm_extra_data"] = {
         "vsc_tr": [
             ("src/include", "share"),

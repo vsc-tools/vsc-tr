@@ -1,6 +1,7 @@
 
 cimport debug_mgr.core as dmgr_core
 cimport vsc_dm.core as dm_core
+from ciostream.core cimport costream, cistream
 from vsc_tr cimport decl
 from libc.stdint cimport intptr_t
 from libc.stdint cimport uintptr_t
@@ -23,7 +24,10 @@ cdef class Factory(object):
 
     cpdef TraceRW mkTraceMem(self)
 
-
+    cpdef TraceWriter mkTraceVtrWriter(self,
+        costream        out,
+        int32_t         timescale,
+        int32_t         timeunit)
 
 cdef class Stream(object):
     cdef decl.IStream           *_hndl

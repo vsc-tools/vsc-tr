@@ -65,6 +65,9 @@ intptr_t VtrStreamWriter::addTransaction(
     m_twriter.write_si(tstart_delta);
     m_twriter.write_si(tend_delta);
 
+    int32_t type_id = m_trace->getTypeId(data.type());
+    m_twriter.write_ui(type_id);
+
     // TODO: pack data
 
     // Now, write to the primary writer

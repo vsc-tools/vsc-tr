@@ -19,6 +19,7 @@
  *     Author: 
  */
 #pragma once
+#include <iostream>
 #include "dmgr/IDebugMgr.h"
 #include "vsc/tr/ITraceReader.h"
 #include "vsc/tr/ITraceRW.h"
@@ -39,6 +40,13 @@ public:
     virtual dmgr::IDebugMgr *getDebugMgr() = 0;
 
     virtual ITraceRW *mkTraceMem() = 0;
+
+    virtual ITraceWriter *mkTraceVtrWriter(
+        std::ostream    *out,
+        int32_t         timescale,
+        int32_t         timeunit) = 0;
+
+    virtual ITraceReader *mkTraceVtrReader(std::istream *in) = 0;
 
 };
 

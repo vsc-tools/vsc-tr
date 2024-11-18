@@ -21,6 +21,7 @@
 #include "vsc/tr/FactoryExt.h"
 #include "Factory.h"
 #include "TraceMemRW.h"
+#include "VtrTraceWriter.h"
 
 
 namespace vsc {
@@ -37,6 +38,17 @@ Factory::~Factory() {
 
 ITraceRW *Factory::mkTraceMem() {
     return new TraceMemRW(m_dmgr);
+}
+
+ITraceWriter *Factory::mkTraceVtrWriter(
+    std::ostream    *out,
+    int32_t         timescale,
+    int32_t         timeunit) {
+    return new VtrTraceWriter(out, timescale, timeunit);
+}
+
+ITraceReader *Factory::mkTraceVtrReader(std::istream *in) {
+
 }
 
 IFactory *Factory::inst() {

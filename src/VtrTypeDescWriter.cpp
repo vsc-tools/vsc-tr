@@ -1,5 +1,5 @@
-/**
- * VtrMemBlockReader.h
+/*
+ * VtrTypeDescWriter.cpp
  *
  * Copyright 2023 Matthew Ballance and Contributors
  *
@@ -16,44 +16,42 @@
  * limitations under the License.
  *
  * Created on:
- *     Author: 
+ *     Author:
  */
-#pragma once
-#include <stdint.h>
-#include "IVtrReader.h"
+#include "VtrTypeDescWriter.h"
+#include "VtrTraceWriter.h"
+
 
 namespace vsc {
 namespace tr {
 
 
+VtrTypeDescWriter::VtrTypeDescWriter(
+    VtrTraceWriter      *trace,
+    IVtrWriter          *writer) : m_trace(trace), m_writer(writer) {
 
-class VtrMemBlockReader :
-    public virtual IVtrReader {
-public:
-    VtrMemBlockReader(uint8_t *mem, int32_t mem_sz, bool owned);
+}
 
-    virtual ~VtrMemBlockReader();
+VtrTypeDescWriter::~VtrTypeDescWriter() {
 
-    virtual uint64_t read_ui() override;
+}
 
-    virtual int64_t read_si() override;
+void VtrTypeDescWriter::visitDataTypeBool(dm::IDataTypeBool *t) {
 
-    virtual void read_bytes(void *data, int32_t sz) override;
+}
 
-    void reset();
+void VtrTypeDescWriter::visitDataTypeInt(dm::IDataTypeInt *t) {
+    
 
-    virtual bool valid() const override { return m_idx < m_mem_sz; }
+}
 
-private:
-    uint8_t                 *m_mem;
-    int32_t                 m_mem_sz;
-    bool                    m_owned;
-    int32_t                 m_idx;
+void VtrTypeDescWriter::visitDataTypeString(dm::IDataTypeString *t) {
 
+}
 
-};
+void VtrTypeDescWriter::visitDataTypeStruct(dm::IDataTypeStruct *t) {
+
+}
 
 }
 }
-
-

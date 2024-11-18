@@ -1,5 +1,5 @@
 /**
- * VtrMemBlockReader.h
+ * VtrStreamIterator.h
  *
  * Copyright 2023 Matthew Ballance and Contributors
  *
@@ -19,37 +19,19 @@
  *     Author: 
  */
 #pragma once
-#include <stdint.h>
-#include "IVtrReader.h"
+#include "vsc/tr/ITraceIterator.h"
 
 namespace vsc {
 namespace tr {
 
 
 
-class VtrMemBlockReader :
-    public virtual IVtrReader {
+class VtrStreamIterator :
+    public virtual ITraceIterator {
 public:
-    VtrMemBlockReader(uint8_t *mem, int32_t mem_sz, bool owned);
+    VtrStreamIterator();
 
-    virtual ~VtrMemBlockReader();
-
-    virtual uint64_t read_ui() override;
-
-    virtual int64_t read_si() override;
-
-    virtual void read_bytes(void *data, int32_t sz) override;
-
-    void reset();
-
-    virtual bool valid() const override { return m_idx < m_mem_sz; }
-
-private:
-    uint8_t                 *m_mem;
-    int32_t                 m_mem_sz;
-    bool                    m_owned;
-    int32_t                 m_idx;
-
+    virtual ~VtrStreamIterator();
 
 };
 

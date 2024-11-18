@@ -35,7 +35,11 @@ static const int32_t TARGET_BLOCK_SZ = 8192;
 VtrTraceWriter::VtrTraceWriter(
     std::ostream        *out,
     int32_t             timescale,
-    int32_t             timeunit) : m_out(out), m_last_term(0) {
+    int32_t             timeunit) : m_out(out), 
+    m_streams_last_sz(0), m_streams_last(0),
+    m_type_desc_last_sz(0), m_type_desc_last(0),
+    m_strtab_last_sz(0), m_strtab_last(0),
+    m_last_term(0) {
     memset(&m_hdr, 0, sizeof(m_hdr));
     m_hdr.magic = VTR_MAGIC;
     m_hdr.version = 0x00000100; // 0.0.1
@@ -76,14 +80,24 @@ IStreamWriter *VtrTraceWriter::addStream(const std::string &name) {
 
 void VtrTraceWriter::flush() {
     // Collect enough data 
-    std::streampos next = m_out->tellp();
+    std::streampos next = 0;
 
-    if (m_last_term == next) {
-        return;
+    std::streampos type_def_p = writeTypeDef();
+    if (type_def_p > next) {
+        next = type_def_p;
     }
 
-    // TODO: flushStrTab
+    // Flush any new string entries
+    std::streampos strtab_p = writeStrTab();
+    if (strtab_p > next) {
+        next = strtab_p;
+    }
+
     // TODO: flushStreamDesc
+    std::streampos stream_desc_p = writeStreamDescriptors();
+    if (stream_desc_p > next) {
+        next = stream_desc_p;
+    }
 
     // Need to write the stream-data pointer record first.
     // But, first, we need to ensure that the streams
@@ -92,37 +106,109 @@ void VtrTraceWriter::flush() {
     for (std::vector<VtrStreamWriterUP>::const_iterator
         it=m_streams.begin();
         it!=m_streams.end(); it++) {
-        stream_data_p.push_back((*it)->flush());
+        std::streampos stream_last = (*it)->flush();
+        if (stream_last > next) {
+            next = stream_last;
+        }
+        stream_data_p.push_back(stream_last);
     }
 
-    // Write the actual stream-data pointer record
-    std::streampos stream_data_p_ptr = m_out->tellp();
+    if (next > m_last_term) {
+        // Data has been written since the last terminator
+        // was output
 
-    VtrTraceTerminator term;
+        // Write the actual stream-data pointer record
+        std::streampos stream_data_p_ptr = m_out->tellp();
+        char tmp[64];
+        uint32_t nbytes;
 
-    m_last_term = next;
+        // Write the number of elements
+        nbytes = VtrMemBlockWriter::pack_ui(m_streams.size(), (uint8_t *)tmp);
+        m_out->write(tmp, nbytes);
+        for (std::vector<std::streampos>::const_iterator
+            it=stream_data_p.begin();
+            it!=stream_data_p.end(); it++) {
+            // Write out the last stream-data pointers
+            nbytes = VtrMemBlockWriter::pack_ui(*it, (uint8_t *)tmp);
+            m_out->write(tmp, nbytes);
+        }
+
+        // Now, write the Terminator record
+        VtrTraceTerminator term;
+        term.type = VtrBlockType::Terminator;
+        term.type_def_p = 0;
+        term.stream_desc_p = stream_desc_p;
+        term.stream_data_p = stream_data_p_ptr;
+        term.strtab_p = strtab_p;
+
+        term.write(m_out);
+
+        // Record the position *after* writing the
+        // terminator, since that's what we have 
+        // available when flush() is called next
+        m_last_term = m_out->tellp();
+    }
+
+
+
+
 }
 
 void VtrTraceWriter::close() {
     flush();
 }
 
-int32_t VtrTraceWriter::mapStr(const std::string &str) {
+int32_t VtrTraceWriter::mapStr(const std::string &str, bool add) {
     int32_t ret = -1;
     std::unordered_map<std::string,int32_t>::const_iterator it;
 
     if ((it=m_strtab.find(str)) != m_strtab.end()) {
         ret = it->second;
-    } else {
-        ret = m_strtab.size();
+    } else if (add) {
+        ret = m_strtab_l.size();
         m_strtab.insert({str, ret});
+        m_strtab_l.push_back(str);
     }
     return ret;
 }
 
+int32_t VtrTraceWriter::getTypeId(dm::IDataType *t, bool add) {
+    int32_t ret = -1;
+    std::unordered_map<dm::IDataType *,int32_t>::const_iterator it;
+    if ((it=m_type_m.find(t)) != m_type_m.end()) {
+        ret = it->second;
+    } else if (add) {
+        ret = m_type_l.size();
+        m_type_m.insert({t, ret});
+        m_type_l.push_back(t);
+    }
+    return ret;
+}
+
+std::streampos VtrTraceWriter::writeTypeDef() {
+
+}
+
 
 std::streampos VtrTraceWriter::writeStreamDescriptors() {
-    std::streampos ret = m_out->tellp();
+    std::streampos ret = m_type_desc_last;
+
+    if (m_streams.size() > m_streams_last_sz) {
+        VtrMemBlockWriter writer;
+        ret = m_out->tellp();
+        for (uint32_t i=m_streams_last_sz; i<m_streams.size(); i++) {
+            if (writer.size() > 16384) {
+                // Flush
+                writer.reset();
+            }
+        }
+
+        if (writer.size()) {
+            // Flush
+        }
+
+        m_streams_last_sz = m_streams.size();
+    }
 
     // Pack the descriptors into
 
@@ -132,17 +218,13 @@ std::streampos VtrTraceWriter::writeStreamDescriptors() {
 std::streampos VtrTraceWriter::writeStrTab() {
     VtrMemBlockWriter writer;
     std::streampos ret = m_out->tellp();
-    std::streampos last = 0;
+    std::streampos last = m_strtab_last;
 
     // First 
 
-    if (m_strtab.size()) {
-        for (std::unordered_map<std::string,int32_t>::const_iterator
-            it=m_strtab.begin();
-            it!=m_strtab.end(); it++) {
-                writer.write_ui(it->second);
-                writer.write_ui(it->first.size());
-                writer.write_bytes(it->first.c_str(), it->first.size());
+    if (m_strtab_last_sz < m_strtab_l.size()) {
+        for (uint32_t i=m_strtab_last_sz; i<m_strtab_l.size(); i++) {
+            writer.write_bytes(m_strtab_l.at(i).c_str(), m_strtab_l.at(i).size());
 
             if (writer.size() >= TARGET_BLOCK_SZ) {
                 // Flush block 
@@ -158,6 +240,7 @@ std::streampos VtrTraceWriter::writeStrTab() {
                 last = block;
             }
         }
+        m_strtab_last_sz = m_strtab_l.size();
 
         if (writer.size()) {
             std::streampos block = m_out->tellp();
@@ -171,15 +254,8 @@ std::streampos VtrTraceWriter::writeStrTab() {
             writer.reset();
             last = block;
         }
-    } else {
-        last = m_out->tellp();
-        VtrBlockHeader::write(
-            m_out,
-            VtrBlockType::StrTab,
-            0,
-            0,
-            0);
     }
+    m_strtab_last = last;
 
     return last;
 }

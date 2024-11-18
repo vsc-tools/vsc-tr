@@ -57,7 +57,50 @@ Note: The header block is written with uncompressed values
 - sz
 - start time
 - end time
+- type-id
 - data
+
+# DataType Desc Block
+- <base>
+- list-of desc
+
+# DataType Desc
+- sz
+- type
+- data
+
+## Integer Type
+- sz
+- type
+- is_signed
+- width
+
+## Enum TYpe
+- sz
+- type
+- base type-id (?)
+- num_enumerators
+  - name-id
+  - value
+
+## Struct Type
+- sz
+- type
+- num_fields
+- fields
+  - name-id
+  - type-id
+
+## Array Type
+- sz
+- type
+- element type-id
+- array-sz
+
+## List Type
+- sz
+- type
+- element type-id
 
 Key is to max-size. 
 - Have size of block data that was incrementally packed

@@ -6,6 +6,7 @@ from libcpp.set cimport set as cpp_set
 from libcpp.string cimport string as cpp_string
 from libcpp.vector cimport vector as cpp_vector
 from libcpp.memory cimport unique_ptr
+from ciostream.core cimport ostream, istream
 from libc.stdint cimport intptr_t
 from libc.stdint cimport uintptr_t
 from libc.stdint cimport int32_t
@@ -32,6 +33,10 @@ cdef extern from "vsc/tr/IFactory.h" namespace "vsc::tr":
         void init(dmgr_decl.IDebugMgr *)
 #        IContext *mkContext()
         ITraceRW *mkTraceMem()
+        ITraceWriter *mkTraceVtrWriter(
+            ostream             *out,
+            int32_t             timescale,
+            int32_t             timeunit)
         dmgr_decl.IDebugMgr *getDebugMgr()
 
 cdef extern from "vsc/tr/IStream.h" namespace "vsc::tr":

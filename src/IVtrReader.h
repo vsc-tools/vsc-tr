@@ -1,5 +1,5 @@
-/*
- * VtrTraceDesc.cpp
+/**
+ * IVtrReader.h
  *
  * Copyright 2023 Matthew Ballance and Contributors
  *
@@ -16,22 +16,32 @@
  * limitations under the License.
  *
  * Created on:
- *     Author:
+ *     Author: 
  */
-#include "VtrTraceDesc.h"
-
+#pragma once
+#include <stdint.h>
 
 namespace vsc {
 namespace tr {
 
 
-VtrTraceDesc::VtrTraceDesc() {
 
-}
+class IVtrReader {
+public:
 
-VtrTraceDesc::~VtrTraceDesc() {
+    virtual ~IVtrReader() { }
 
-}
+    virtual uint64_t read_ui() = 0;
 
-}
-}
+    virtual int64_t read_si() = 0;
+
+    virtual void read_bytes(void *data, int32_t sz) = 0;
+
+    virtual bool valid() const = 0;
+
+};
+
+} /* namespace tr */
+} /* namespace vsc */
+
+

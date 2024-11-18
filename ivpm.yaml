@@ -10,6 +10,8 @@ package:
           src: pypi
         - name: ninja
           src: pypi
+        - name: ciostream
+          url: https://github.com/mballance-utils/ciostream.git
         - name: vsc-dm
           url: https://github.com/vsc-tools/vsc-dm.git
         - name: pyvsc-dataclasses
